@@ -1,160 +1,348 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Savage's Pre Order | Arm To Serve</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#080b12;color:white}
-header{padding:20px 6%;display:flex;justify-content:space-between;align-items:center;background:#10141e;border-bottom:1px solid #222}
-.logo{font-size:22px;font-weight:900}
-.logo span{color:#168cff}
-.cart{background:#168cff;color:white;padding:12px 18px;border:0;border-radius:7px;font-weight:bold}
-.hero{padding:75px 7%;background:linear-gradient(120deg,#080b12,#102d50);text-align:center}
-.hero h1{font-size:42px;margin-bottom:15px}
-.hero h1 span{color:#168cff}
-.hero p{color:#c5d2e2;margin-bottom:25px}
-.shop-btn{background:#168cff;color:white;padding:14px 25px;border:0;border-radius:6px;font-weight:bold}
-section{padding:45px 6%}
-h2{margin-bottom:25px}
-.categories{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:30px}
-.categories button{background:#171e2b;color:white;border:1px solid #168cff;padding:12px 20px;border-radius:6px}
-.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
-.product{background:#141a25;border:1px solid #283448;border-radius:10px;overflow:hidden}
-.product img{width:100%;height:145px;object-fit:cover;background:#202a3b}
-.product-info{padding:13px}
-.product h3{font-size:15px;margin-bottom:8px}
-.price{color:#168cff;font-weight:bold;margin-bottom:12px}
-.product button{background:#168cff;color:white;border:0;padding:11px;width:100%;border-radius:5px}
-.cart-box{background:#141a25;padding:20px;border-radius:10px}
-.cart-item{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #333}
-.cart-item button{background:#a72d3c;color:white;border:0;padding:5px 9px;border-radius:4px}
-.checkout{margin-top:20px;width:100%;padding:15px;background:#168cff;color:white;border:0;border-radius:6px;font-weight:bold}
-input,textarea{width:100%;padding:13px;margin:8px 0;background:#080b12;border:1px solid #39465c;color:white;border-radius:5px}
-footer{text-align:center;background:#10141e;padding:30px;color:#aaa}
-footer a{color:#168cff}
-@media(min-width:700px){
-.hero h1{font-size:60px}
-.products{grid-template-columns:repeat(4,minmax(0,1fr))}
-.product img{height:210px}
-}
+:root{--blue:#1769ff;--dark:#101827;--light:#f4f7fc}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--light);color:var(--dark)}
+header{background:#101827;color:white;padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-size:22px;font-weight:900}.brand span{color:#55a2ff}
+nav{display:flex;gap:8px;flex-wrap:wrap}
+button{border:0;border-radius:8px;padding:11px 15px;cursor:pointer;font-weight:bold;background:var(--blue);color:white}
+button.secondary{background:#26364e}
+button.danger{background:#c62828}
+button:disabled{opacity:.5}
+.hero{padding:65px 6%;background:linear-gradient(120deg,#101827,#174b9c);color:white}
+.hero h1{font-size:clamp(35px,7vw,65px);margin:0 0 12px}
+.hero p{font-size:18px;max-width:550px;line-height:1.6}
+main{max-width:1200px;margin:auto;padding:30px 5%}
+.section-title{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.categories,.filters{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+.categories button{background:#dce8ff;color:#12366e}
+.categories button.active{background:var(--blue);color:white}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}
+.product{background:white;border-radius:13px;overflow:hidden;box-shadow:0 4px 18px #14233b12}
+.product img{width:100%;height:210px;object-fit:cover;background:#e7edf7}
+.product-info{padding:15px}
+.product h3{margin:4px 0 8px}
+.price{font-size:20px;font-weight:900;color:var(--blue)}
+.product-actions{display:flex;gap:8px;margin-top:12px}
+.product-actions button{flex:1}
+.panel{background:white;padding:20px;border-radius:12px;margin:20px 0;box-shadow:0 4px 18px #14233b12}
+input,textarea,select{width:100%;padding:12px;margin:7px 0 13px;border:1px solid #ccd5e3;border-radius:8px;font:inherit}
+label{font-weight:bold;font-size:14px}
+.hidden{display:none!important}
+.notice{padding:12px;background:#e5efff;border-radius:8px;margin:12px 0}
+.item{padding:12px 0;border-bottom:1px solid #e3e8f0}
+footer{background:#101827;color:white;text-align:center;padding:30px;margin-top:40px}
+a{color:inherit}
+#message{position:sticky;top:0;z-index:10;background:#fff3cd;padding:10px;text-align:center;display:none}
+@media(max-width:600px){header{padding:15px}.hero{padding:45px 6%}nav button{padding:9px;font-size:12px}}
 </style>
 </head>
 <body>
-
+<div id="message"></div>
 <header>
-<div class="logo">SAVAGE'S <span>PRE ORDER</span></div>
-<button class="cart" onclick="document.getElementById('cart').scrollIntoView()">CART (<span id="count">0</span>)</button>
+  <div class="brand">SAVAGE'S <span>PRE ORDER</span></div>
+  <nav>
+    <button class="secondary" onclick="showSection('store')">Shop</button>
+    <button class="secondary" onclick="showSection('cart')">Cart (<span id="cartCount">0</span>)</button>
+    <button class="secondary" onclick="showSection('wishlist')">Wishlist</button>
+    <button onclick="showSection('account')">My Account</button>
+  </nav>
 </header>
 
-<div class="hero">
-<h1>WELCOME TO <span>SAVAGE'S</span></h1>
-<p>ARM TO SERVE. Quality Sneakers, Tops and Furniture.</p>
-<button class="shop-btn" onclick="document.getElementById('shop').scrollIntoView()">SHOP NOW</button>
-</div>
-
-<section id="shop">
-<h2>OUR COLLECTION</h2>
-<div class="categories">
-<button onclick="filterProducts('All')">All</button>
-<button onclick="filterProducts('Sneakers')">Sneakers</button>
-<button onclick="filterProducts('Tops')">Tops</button>
-<button onclick="filterProducts('Furniture')">Furniture</button>
-</div>
-<div class="products" id="products"></div>
+<section class="hero">
+  <p>WELCOME TO SAVAGE'S PRE ORDER</p>
+  <h1>Style. Comfort. Quality.</h1>
+  <p>Shop sneakers, tops and furniture. Find what you love and order with confidence.</p>
+  <button onclick="showSection('store')">SHOP NOW</button>
 </section>
 
-<section id="cart">
-<h2>YOUR SHOPPING CART</h2>
-<div class="cart-box">
-<div id="cart-items">Your cart is empty.</div>
-<h3 style="margin-top:20px">Total: GH₵<span id="total">0.00</span></h3>
-
-<h3 style="margin-top:25px">Delivery Details</h3>
-<input id="customer" placeholder="Your full name">
-<input id="phone" placeholder="Phone number">
-<input id="address" placeholder="Delivery address">
-<button class="checkout" onclick="checkout()">CONTINUE TO CHECKOUT</button>
-<p id="message" style="margin-top:12px;color:#168cff"></p>
-</div>
+<main>
+<section id="store">
+  <div class="section-title">
+    <div><h2>Shop Our Collection</h2><p>Discover your next favourite item.</p></div>
+    <input id="search" style="max-width:230px" placeholder="Search products..." oninput="renderProducts()">
+  </div>
+  <div class="categories">
+    <button class="active" onclick="setCategory('All',this)">All</button>
+    <button onclick="setCategory('Sneakers',this)">Sneakers</button>
+    <button onclick="setCategory('Tops',this)">Tops</button>
+    <button onclick="setCategory('Furniture',this)">Furniture</button>
+  </div>
+  <div id="products" class="products"><p>Loading products...</p></div>
 </section>
+
+<section id="cart" class="hidden">
+  <h2>Your Shopping Cart</h2>
+  <div class="panel" id="cartItems"></div>
+  <button onclick="showSection('checkout')">Proceed to Checkout</button>
+</section>
+
+<section id="wishlist" class="hidden">
+  <h2>Your Wishlist</h2>
+  <div class="products" id="wishItems"></div>
+</section>
+
+<section id="account" class="hidden">
+  <h2>Customer Account</h2>
+  <div class="panel" id="authPanel">
+    <h3>Login or Create Account</h3>
+    <label>Email</label><input id="email" type="email" placeholder="Your email">
+    <label>Password</label><input id="password" type="password" placeholder="Password (at least 6 characters)">
+    <button onclick="login()">Login</button>
+    <button class="secondary" onclick="register()">Create Account</button>
+    <p id="authMessage"></p>
+  </div>
+  <div class="panel hidden" id="loggedPanel">
+    <p id="loggedEmail"></p>
+    <button onclick="loadOrders()">My Orders</button>
+    <button class="secondary" onclick="logout()">Logout</button>
+    <div id="myOrders"></div>
+  </div>
+  <div class="panel">
+    <h3>Admin</h3>
+    <p>Sign in using your authorised admin account, then open the admin dashboard.</p>
+    <button onclick="openAdmin()">Open Admin Dashboard</button>
+    <div id="adminMessage"></div>
+  </div>
+</section>
+
+<section id="checkout" class="hidden">
+  <h2>Delivery Information</h2>
+  <div class="panel">
+    <label>Full name</label><input id="deliveryName" placeholder="Full name">
+    <label>Phone number</label><input id="deliveryPhone" placeholder="e.g. 0240000000">
+    <label>Delivery address</label><textarea id="deliveryAddress" placeholder="Enter your full delivery address"></textarea>
+    <p id="checkoutTotal"></p>
+    <button onclick="payNow()">Continue to Paystack Payment</button>
+  </div>
+</section>
+
+<section id="admin" class="hidden">
+  <h2>Admin Dashboard</h2>
+  <div class="panel">
+    <h3>Add a Product</h3>
+    <label>Product name</label><input id="pName" placeholder="Product name">
+    <label>Category</label>
+    <select id="pCategory"><option>Sneakers</option><option>Tops</option><option>Furniture</option></select>
+    <label>Price (GH₵)</label><input id="pPrice" type="number" min="0.01" step="0.01" placeholder="Price">
+    <label>Image URL</label><input id="pImage" type="url" placeholder="https://...">
+    <label>Description</label><textarea id="pDescription" placeholder="Product description"></textarea>
+    <button onclick="addProduct()">Add Product</button>
+  </div>
+  <div class="panel">
+    <h3>Manage Products</h3><div id="adminProducts"></div>
+  </div>
+  <div class="panel">
+    <h3>Customer Orders</h3><button onclick="loadAdminOrders()">Refresh Orders</button>
+    <div id="adminOrders"></div>
+  </div>
+</section>
+</main>
 
 <footer>
-<h3>SAVAGE'S PRE ORDER</h3>
-<p>ARM TO SERVE</p>
-<p>Atonsu, Kumasi, Ghana</p>
-<p>WhatsApp: <a href="https://wa.me/233257980924">0257980924</a></p>
-<p style="margin-top:15px">© 2026 Savage's Pre Order. All rights reserved.</p>
+  <h3>SAVAGE'S PRE ORDER</h3>
+  <p>Arm To Serve</p>
+  <p>Atonsu, Kumasi, Ghana</p>
+  <p>WhatsApp: 0257980924</p>
+  <a href="https://wa.me/233257980924">Chat with us on WhatsApp</a>
 </footer>
 
 <script>
-const products = [
-{name:"Premium Sneakers",category:"Sneakers",price:350,image:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500"},
-{name:"Classic Sneakers",category:"Sneakers",price:280,image:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500"},
-{name:"Fashion Top",category:"Tops",price:120,image:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500"},
-{name:"Premium T-Shirt",category:"Tops",price:150,image:"https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=500"},
-{name:"Modern Chair",category:"Furniture",price:650,image:"https://images.unsplash.com/photo-1503602642458-232111445657?w=500"},
-{name:"Luxury Furniture",category:"Furniture",price:1200,image:"https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=500"}
-];
+const SUPABASE_URL = "https://sbzdfqfxmvlfbkulltxs.supabase.co";
+const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let cart=[];
-let currentCategory="All";
+let products = [];
+let category = "All";
+let cart = JSON.parse(localStorage.getItem("savage_cart") || "[]");
+let wishlist = JSON.parse(localStorage.getItem("savage_wishlist") || "[]");
+let session = null;
 
-function displayProducts(){
-const list=products.filter(p=>currentCategory==="All"||p.category===currentCategory);
-document.getElementById("products").innerHTML=list.map(p=>`
-<div class="product">
-<img src="${p.image}" alt="${p.name}">
-<div class="product-info">
-<h3>${p.name}</h3>
-<div class="price">GH₵${p.price.toFixed(2)}</div>
-<button onclick="addToCart('${p.name}')">ADD TO CART</button>
-</div>
-</div>`).join("");
+function message(text){
+  const el=document.getElementById("message");
+  el.textContent=text;el.style.display="block";
+  window.scrollTo({top:0,behavior:"smooth"});
+  setTimeout(()=>el.style.display="none",5000);
 }
-
-function filterProducts(category){
-currentCategory=category;
-displayProducts();
+function esc(value){
+  return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
-
-function addToCart(name){
-const product=products.find(p=>p.name===name);
-const existing=cart.find(p=>p.name===name);
-if(existing){existing.qty++}
-else{cart.push({...product,qty:1})}
-updateCart();
+function money(value){return "GH₵"+Number(value||0).toFixed(2)}
+function safeImage(url){
+  try{const u=new URL(url);return ["https:","http:"].includes(u.protocol)?u.href:""}catch{return ""}
 }
-
-function updateCart(){
-document.getElementById("count").textContent=cart.reduce((s,p)=>s+p.qty,0);
-document.getElementById("total").textContent=cart.reduce((s,p)=>s+p.price*p.qty,0).toFixed(2);
-document.getElementById("cart-items").innerHTML=cart.length?
-cart.map(p=>`
-<div class="cart-item">
-<div>${p.name} × ${p.qty}<br>GH₵${(p.price*p.qty).toFixed(2)}</div>
-<button onclick="removeItem('${p.name}')">Remove</button>
-</div>`).join(""):"Your cart is empty.";
+function saveCart(){localStorage.setItem("savage_cart",JSON.stringify(cart));document.getElementById("cartCount").textContent=cart.reduce((n,x)=>n+x.quantity,0)}
+function showSection(id){
+  ["store","cart","wishlist","account","checkout","admin"].forEach(x=>document.getElementById(x).classList.toggle("hidden",x!==id));
+  if(id==="cart")renderCart();
+  if(id==="wishlist")renderWishlist();
+  if(id==="checkout")document.getElementById("checkoutTotal").textContent="Order total: "+money(cart.reduce((n,x)=>n+x.price*x.quantity,0));
+  window.scrollTo({top:0,behavior:"smooth"});
 }
-
-function removeItem(name){
-cart=cart.filter(p=>p.name!==name);
-updateCart();
+function setCategory(value,btn){
+  category=value;
+  document.querySelectorAll(".categories button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");renderProducts();
 }
-
-function checkout(){
-if(!cart.length){alert("Please add a product first.");return;}
-const name=document.getElementById("customer").value.trim();
-const phone=document.getElementById("phone").value.trim();
-const address=document.getElementById("address").value.trim();
-if(!name||!phone||!address){alert("Please complete all delivery details.");return;}
-document.getElementById("message").textContent=
-"Your details are ready. Secure payment will be connected in the next setup step.";
+async function loadProducts(){
+  try{
+    const r=await fetch("/api/products");
+    const data=await r.json();
+    if(!r.ok)throw new Error(data.error||"Could not load products");
+    products=data;renderProducts();
+  }catch(e){document.getElementById("products").textContent=e.message}
 }
-
-displayProducts();
+function renderProducts(){
+  const search=(document.getElementById("search").value||"").toLowerCase();
+  const list=products.filter(p=>(category==="All"||p.category===category)&&(`${p.name} ${p.description||""}`).toLowerCase().includes(search));
+  document.getElementById("products").innerHTML=list.length?list.map(p=>`
+    <article class="product">
+      <img src="${esc(safeImage(p.image_url)||"https://placehold.co/600x450?text=Savages+Pre+Order")}" alt="${esc(p.name)}">
+      <div class="product-info"><small>${esc(p.category)}</small><h3>${esc(p.name)}</h3>
+      <p>${esc(p.description||"")}</p><div class="price">${money(p.price)}</div>
+      <div class="product-actions">
+      <button onclick="addToCart('${esc(p.id)}')">Add to Cart</button>
+      <button class="secondary" onclick="toggleWish('${esc(p.id)}')">♡</button>
+      </div></div>
+    </article>`).join(""):"<p>No products found yet. Please check again soon.</p>";
+}
+function addToCart(id){
+  const p=products.find(x=>String(x.id)===String(id));if(!p)return;
+  const item=cart.find(x=>String(x.product_id)===String(id));
+  if(item)item.quantity++;else cart.push({product_id:p.id,name:p.name,price:Number(p.price),quantity:1});
+  saveCart();message("Added to your cart.");
+}
+function toggleWish(id){
+  wishlist.includes(id)?wishlist=wishlist.filter(x=>x!==id):wishlist.push(id);
+  localStorage.setItem("savage_wishlist",JSON.stringify(wishlist));renderWishlist();message("Wishlist updated.");
+}
+function renderCart(){
+  const el=document.getElementById("cartItems");
+  if(!cart.length){el.innerHTML="Your cart is empty.";return}
+  el.innerHTML=cart.map((x,i)=>`<div class="item"><b>${esc(x.name)}</b> — ${money(x.price)} × ${x.quantity}
+  <button class="secondary" onclick="changeQty(${i},-1)">−</button>
+  <button class="secondary" onclick="changeQty(${i},1)">+</button>
+  <button class="danger" onclick="removeCart(${i})">Remove</button></div>`).join("")+
+  `<h3>Total: ${money(cart.reduce((n,x)=>n+x.price*x.quantity,0))}</h3>`;
+}
+function changeQty(i,n){cart[i].quantity+=n;if(cart[i].quantity<1)cart.splice(i,1);saveCart();renderCart()}
+function removeCart(i){cart.splice(i,1);saveCart();renderCart()}
+function renderWishlist(){
+  document.getElementById("wishItems").innerHTML=products.filter(p=>wishlist.includes(String(p.id))).map(p=>`
+  <article class="product"><img src="${esc(safeImage(p.image_url)||"https://placehold.co/600x450")}" alt="">
+  <div class="product-info"><h3>${esc(p.name)}</h3><p>${money(p.price)}</p>
+  <button onclick="addToCart('${esc(p.id)}')">Add to Cart</button>
+  <button class="danger" onclick="toggleWish('${esc(p.id)}')">Remove</button></div></article>`).join("")||"Your wishlist is empty.";
+}
+async function login(){
+  const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value;
+  const {data,error}=await db.auth.signInWithPassword({email,password});
+  document.getElementById("authMessage").textContent=error?error.message:"Welcome back!";
+  if(!error){session=data.session;updateAccount();message("You are logged in.");}
+}
+async function register(){
+  const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value;
+  if(password.length<6){document.getElementById("authMessage").textContent="Password must be at least 6 characters.";return}
+  const {data,error}=await db.auth.signUp({email,password});
+  document.getElementById("authMessage").textContent=error?error.message:(data.session?"Account created. You are logged in.":"Account created. Check your email to confirm your account.");
+  if(data.session){session=data.session;updateAccount()}
+}
+async function logout(){await db.auth.signOut();session=null;updateAccount();showSection("store");message("You have logged out.")}
+function updateAccount(){
+  const logged=!!session;
+  document.getElementById("authPanel").classList.toggle("hidden",logged);
+  document.getElementById("loggedPanel").classList.toggle("hidden",!logged);
+  document.getElementById("loggedEmail").textContent=logged?"Signed in as "+session.user.email:"";
+}
+async function api(path,options={}){
+  if(!session)throw new Error("Please log in first.");
+  const response=await fetch(path,{...options,headers:{"Content-Type":"application/json","Authorization":"Bearer "+session.access_token,...(options.headers||{})}});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||"Request failed.");
+  return data;
+}
+async function loadOrders(){
+  try{
+    const orders=await api("/api/my-orders");
+    document.getElementById("myOrders").innerHTML="<h3>Your Orders</h3>"+(orders.map(o=>`<div class="item"><b>Order ${esc(o.id)}</b><br>Total: ${money(o.total_amount)}<br>Payment: ${esc(o.payment_status)}<br>Status: ${esc(o.order_status)}</div>`).join("")||"No orders yet.");
+  }catch(e){message(e.message)}
+}
+async function payNow(){
+  if(!session){message("Please log in before checkout.");showSection("account");return}
+  if(!cart.length){message("Your cart is empty.");return}
+  const delivery={name:document.getElementById("deliveryName").value.trim(),phone:document.getElementById("deliveryPhone").value.trim(),address:document.getElementById("deliveryAddress").value.trim()};
+  if(!delivery.name||!delivery.phone||!delivery.address){message("Please complete all delivery details.");return}
+  try{
+    const result=await api("/api/payments/initialize",{method:"POST",body:JSON.stringify({items:cart.map(x=>({product_id:x.product_id,quantity:x.quantity})),delivery})});
+    window.location.href=result.authorization_url;
+  }catch(e){message(e.message)}
+}
+async function openAdmin(){
+  showSection("admin");
+  try{await loadAdminOrders();await loadAdminProducts();document.getElementById("adminMessage").textContent="Admin access confirmed."}
+  catch(e){document.getElementById("adminMessage").textContent=e.message}
+}
+async function addProduct(){
+  try{
+    await api("/api/admin/products",{method:"POST",body:JSON.stringify({
+      name:document.getElementById("pName").value.trim(),
+      category:document.getElementById("pCategory").value,
+      price:Number(document.getElementById("pPrice").value),
+      image_url:document.getElementById("pImage").value.trim(),
+      description:document.getElementById("pDescription").value.trim()
+    })});
+    message("Product added.");await loadProducts();await loadAdminProducts();
+  }catch(e){message(e.message)}
+}
+async function loadAdminProducts(){
+  await loadProducts();
+  document.getElementById("adminProducts").innerHTML=products.map(p=>`<div class="item"><b>${esc(p.name)}</b> — ${money(p.price)} (${esc(p.category)})
+  <button class="secondary" onclick="editProduct('${esc(p.id)}')">Edit</button>
+  <button class="danger" onclick="deleteProduct('${esc(p.id)}')">Remove</button></div>`).join("")||"No products yet.";
+}
+async function editProduct(id){
+  const p=products.find(x=>String(x.id)===String(id));if(!p)return;
+  const name=prompt("Product name",p.name);if(name===null)return;
+  const price=prompt("Price in GH₵",p.price);if(price===null)return;
+  const description=prompt("Description",p.description||"");
+  try{
+    await api("/api/admin/products/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({name,price:Number(price),description})});
+    message("Product updated.");await loadAdminProducts();
+  }catch(e){message(e.message)}
+}
+async function deleteProduct(id){
+  if(!confirm("Remove this product from the store?"))return;
+  try{await api("/api/admin/products/"+encodeURIComponent(id),{method:"DELETE"});message("Product removed.");await loadAdminProducts()}
+  catch(e){message(e.message)}
+}
+async function loadAdminOrders(){
+  const orders=await api("/api/admin/orders");
+  document.getElementById("adminOrders").innerHTML=orders.map(o=>`
+  <div class="item"><b>Order ${esc(o.id)}</b><br>${esc(o.customer_name)} — ${esc(o.customer_phone)}
+  <br>${esc(o.delivery_address)}<br>Total: ${money(o.total_amount)} | Payment: ${esc(o.payment_status)}
+  <br>Current status: ${esc(o.order_status)}
+  <select id="status-${esc(o.id)}"><option>pending</option><option>processing</option><option>shipped</option><option>delivered</option><option>cancelled</option></select>
+  <button onclick="updateOrder('${esc(o.id)}')">Update Status</button></div>`).join("")||"No orders yet.";
+  orders.forEach(o=>{const s=document.getElementById("status-"+o.id);if(s)s.value=o.order_status});
+}
+async function updateOrder(id){
+  const status=document.getElementById("status-"+id).value;
+  try{await api("/api/admin/orders/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify({order_status:status})});message("Order status updated.");await loadAdminOrders()}
+  catch(e){message(e.message)}
+}
+db.auth.getSession().then(({data})=>{session=data.session;updateAccount()});
+db.auth.onAuthStateChange((_event,newSession)=>{session=newSession;updateAccount()});
+saveCart();
+loadProducts();
 </script>
 </body>
 </html>
