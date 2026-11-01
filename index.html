@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Savage's Pre Order | Arm To Serve</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#080b12;color:white}
+header{padding:20px 6%;display:flex;justify-content:space-between;align-items:center;background:#10141e;border-bottom:1px solid #222}
+.logo{font-size:22px;font-weight:900}
+.logo span{color:#168cff}
+.cart{background:#168cff;color:white;padding:12px 18px;border:0;border-radius:7px;font-weight:bold}
+.hero{padding:75px 7%;background:linear-gradient(120deg,#080b12,#102d50);text-align:center}
+.hero h1{font-size:42px;margin-bottom:15px}
+.hero h1 span{color:#168cff}
+.hero p{color:#c5d2e2;margin-bottom:25px}
+.shop-btn{background:#168cff;color:white;padding:14px 25px;border:0;border-radius:6px;font-weight:bold}
+section{padding:45px 6%}
+h2{margin-bottom:25px}
+.categories{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:30px}
+.categories button{background:#171e2b;color:white;border:1px solid #168cff;padding:12px 20px;border-radius:6px}
+.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.product{background:#141a25;border:1px solid #283448;border-radius:10px;overflow:hidden}
+.product img{width:100%;height:145px;object-fit:cover;background:#202a3b}
+.product-info{padding:13px}
+.product h3{font-size:15px;margin-bottom:8px}
+.price{color:#168cff;font-weight:bold;margin-bottom:12px}
+.product button{background:#168cff;color:white;border:0;padding:11px;width:100%;border-radius:5px}
+.cart-box{background:#141a25;padding:20px;border-radius:10px}
+.cart-item{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #333}
+.cart-item button{background:#a72d3c;color:white;border:0;padding:5px 9px;border-radius:4px}
+.checkout{margin-top:20px;width:100%;padding:15px;background:#168cff;color:white;border:0;border-radius:6px;font-weight:bold}
+input,textarea{width:100%;padding:13px;margin:8px 0;background:#080b12;border:1px solid #39465c;color:white;border-radius:5px}
+footer{text-align:center;background:#10141e;padding:30px;color:#aaa}
+footer a{color:#168cff}
+@media(min-width:700px){
+.hero h1{font-size:60px}
+.products{grid-template-columns:repeat(4,minmax(0,1fr))}
+.product img{height:210px}
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo">SAVAGE'S <span>PRE ORDER</span></div>
+<button class="cart" onclick="document.getElementById('cart').scrollIntoView()">CART (<span id="count">0</span>)</button>
+</header>
+
+<div class="hero">
+<h1>WELCOME TO <span>SAVAGE'S</span></h1>
+<p>ARM TO SERVE. Quality Sneakers, Tops and Furniture.</p>
+<button class="shop-btn" onclick="document.getElementById('shop').scrollIntoView()">SHOP NOW</button>
+</div>
+
+<section id="shop">
+<h2>OUR COLLECTION</h2>
+<div class="categories">
+<button onclick="filterProducts('All')">All</button>
+<button onclick="filterProducts('Sneakers')">Sneakers</button>
+<button onclick="filterProducts('Tops')">Tops</button>
+<button onclick="filterProducts('Furniture')">Furniture</button>
+</div>
+<div class="products" id="products"></div>
+</section>
+
+<section id="cart">
+<h2>YOUR SHOPPING CART</h2>
+<div class="cart-box">
+<div id="cart-items">Your cart is empty.</div>
+<h3 style="margin-top:20px">Total: GH₵<span id="total">0.00</span></h3>
+
+<h3 style="margin-top:25px">Delivery Details</h3>
+<input id="customer" placeholder="Your full name">
+<input id="phone" placeholder="Phone number">
+<input id="address" placeholder="Delivery address">
+<button class="checkout" onclick="checkout()">CONTINUE TO CHECKOUT</button>
+<p id="message" style="margin-top:12px;color:#168cff"></p>
+</div>
+</section>
+
+<footer>
+<h3>SAVAGE'S PRE ORDER</h3>
+<p>ARM TO SERVE</p>
+<p>Atonsu, Kumasi, Ghana</p>
+<p>WhatsApp: <a href="https://wa.me/233257980924">0257980924</a></p>
+<p style="margin-top:15px">© 2026 Savage's Pre Order. All rights reserved.</p>
+</footer>
+
+<script>
+const products = [
+{name:"Premium Sneakers",category:"Sneakers",price:350,image:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500"},
+{name:"Classic Sneakers",category:"Sneakers",price:280,image:"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500"},
+{name:"Fashion Top",category:"Tops",price:120,image:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500"},
+{name:"Premium T-Shirt",category:"Tops",price:150,image:"https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=500"},
+{name:"Modern Chair",category:"Furniture",price:650,image:"https://images.unsplash.com/photo-1503602642458-232111445657?w=500"},
+{name:"Luxury Furniture",category:"Furniture",price:1200,image:"https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=500"}
+];
+
+let cart=[];
+let currentCategory="All";
+
+function displayProducts(){
+const list=products.filter(p=>currentCategory==="All"||p.category===currentCategory);
+document.getElementById("products").innerHTML=list.map(p=>`
+<div class="product">
+<img src="${p.image}" alt="${p.name}">
+<div class="product-info">
+<h3>${p.name}</h3>
+<div class="price">GH₵${p.price.toFixed(2)}</div>
+<button onclick="addToCart('${p.name}')">ADD TO CART</button>
+</div>
+</div>`).join("");
+}
+
+function filterProducts(category){
+currentCategory=category;
+displayProducts();
+}
+
+function addToCart(name){
+const product=products.find(p=>p.name===name);
+const existing=cart.find(p=>p.name===name);
+if(existing){existing.qty++}
+else{cart.push({...product,qty:1})}
+updateCart();
+}
+
+function updateCart(){
+document.getElementById("count").textContent=cart.reduce((s,p)=>s+p.qty,0);
+document.getElementById("total").textContent=cart.reduce((s,p)=>s+p.price*p.qty,0).toFixed(2);
+document.getElementById("cart-items").innerHTML=cart.length?
+cart.map(p=>`
+<div class="cart-item">
+<div>${p.name} × ${p.qty}<br>GH₵${(p.price*p.qty).toFixed(2)}</div>
+<button onclick="removeItem('${p.name}')">Remove</button>
+</div>`).join(""):"Your cart is empty.";
+}
+
+function removeItem(name){
+cart=cart.filter(p=>p.name!==name);
+updateCart();
+}
+
+function checkout(){
+if(!cart.length){alert("Please add a product first.");return;}
+const name=document.getElementById("customer").value.trim();
+const phone=document.getElementById("phone").value.trim();
+const address=document.getElementById("address").value.trim();
+if(!name||!phone||!address){alert("Please complete all delivery details.");return;}
+document.getElementById("message").textContent=
+"Your details are ready. Secure payment will be connected in the next setup step.";
+}
+
+displayProducts();
+</script>
+</body>
+</html>
