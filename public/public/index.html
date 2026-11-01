@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Savage's Pre Order - Arm To Serve - Atonsu Kumasi</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080b12;color:#fff;font-family:Arial}
+header{padding:14px 5%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1e293b;position:sticky;top:0;background:#080b12;z-index:10}
+.brand{font-weight:900;letter-spacing:2px}.brand small{display:block;font-size:8px;color:#94a3b8;letter-spacing:2px}
+.hero{padding:50px 5%}h1{font-size:48px;line-height:.9;letter-spacing:-2px}h1 span{color:#8ab4ff}
+.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;padding:20px 5%}
+.card{background:#111827;border:1px solid #1e293b;border-radius:12px;overflow:hidden}
+.card img{width:100%;height:200px;object-fit:cover}.card-body{padding:14px}
+.card small{color:#8ab4ff;letter-spacing:2px;font-size:10px;text-transform:uppercase}
+.card button{background:#8ab4ff;color:#000;border:0;padding:10px 14px;border-radius:8px;font-weight:800;cursor:pointer;width:100%;margin-top:10px}
+#cart{position:fixed;right:10px;bottom:10px;background:#fff;color:#000;padding:15px;border-radius:12px;width:92%;max-width:360px;display:none;max-height:85vh;overflow:auto;z-index:20}
+#cart.show{display:block}#cart input{width:100%;padding:10px;margin:5px 0;border:1px solid #ddd;border-radius:6px}
+.filter-bar{padding:0 5%;display:flex;gap:10px;flex-wrap:wrap}.filter-bar button{background:transparent;border:1px solid #334155;color:#fff;padding:8px 14px;border-radius:20px}
+.filter-bar button.active{background:#8ab4ff;color:#000;border-color:#8ab4ff}
+</style></head><body>
+<header><div class="brand">SAVAGE'S<small>PRE ORDER · ARM TO SERVE · ATONSU, KUMASI</small></div><div><button onclick="toggleCart()" style="background:#8ab4ff;color:#000;border:0;padding:10px 16px;border-radius:20px;font-weight:800">Cart (<span id="count">0</span>)</button></div></header>
+<div class="hero"><p style="color:#8ab4ff;letter-spacing:3px;font-size:11px">ATONSU · KUMASI · GHANA</p><h1>YOUR STYLE.<br><span>YOUR MOVE.</span></h1><p style="color:#94a3b8;max-width:400px">Discover sneakers, tops and furniture. Secure Paystack payment. WhatsApp: 0257980924</p></div>
+<div class="filter-bar"><button class="active" onclick="setCat('All',this)">All</button><button onclick="setCat('Sneakers',this)">Sneakers</button><button onclick="setCat('Tops',this)">Tops</button><button onclick="setCat('Furniture',this)">Furniture</button></div>
+<div class="products" id="products">Loading products...</div>
+<div id="cart"><div style="display:flex;justify-content:space-between"><h3>Your Bag</h3><button onclick="toggleCart()" style="background:none;border:0;font-size:20px">✕</button></div><div id="cartItems">Empty</div><hr><p>Total: <b id="total">GH₵0.00</b></p><input id="cName" placeholder="Full name"><input id="cEmail" placeholder="Email quaicoegershom1@gmail.com"><input id="cPhone" placeholder="Phone 0257980924"><input id="cAddr" placeholder="Delivery Address Atonsu"><button onclick="checkout()" style="width:100%;background:#8ab4ff;color:#000;padding:12px;border:0;border-radius:8px;font-weight:900;margin-top:10px">Pay Securely with Paystack ↗</button><p id="msg" style="color:#8ab4ff;font-size:13px"></p></div>
+<script>
+let allProducts=[], cart=[], cat='All';
+const gh=n=>'GH₵'+Number(n).toFixed(2);
+function toggleCart(){document.getElementById('cart').classList.toggle('show')}
+function setCat(c,el){cat=c; document.querySelectorAll('.filter-bar button').forEach(b=>b.classList.remove('active')); el.classList.add('active'); render()}
+async function load(){try{let r=await fetch('/api/products'); allProducts=await r.json(); render()}catch(e){document.getElementById('products').innerHTML='Failed to load. Check Render.'}}
+function render(){let list=cat==='All'?allProducts:allProducts.filter(p=>p.category===cat); document.getElementById('products').innerHTML=list.map(p=>`<div class="card"><img src="${p.image}"><div class="card-body"><small>${p.category}</small><h3 style="margin:8px 0">${p.name}</h3><p style="color:#94a3b8;font-size:13px">${p.description}</p><div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><b>${gh(p.price)}</b><span style="font-size:12px;color:#94a3b8">Stock ${p.stock}</span></div><button onclick="add('${p.id}')">Add to Bag</button></div></div>`).join('')}
+function add(id){let p=allProducts.find(x=>x.id==id); let f=cart.find(x=>x.id==id); if(f) f.qty++; else cart.push({id:p.id,name:p.name,price:p.price,qty:1}); updateCart(); toggleCart(); if(!document.getElementById('cart').classList.contains('show')) toggleCart()}
+function updateCart(){document.getElementById('count').textContent=cart.reduce((a,b)=>a+b.qty,0); let total=0; document.getElementById('cartItems').innerHTML=cart.map(c=>{total+=c.price*c.qty; return `<div style="display:flex;justify-content:space-between;margin:8px 0"><span>${c.name} x${c.qty}</span><span>${gh(c.price*c.qty)} <button onclick="cart=cart.filter(x=>x.id!='${c.id}');updateCart()" style="background:none;color:red;border:0">x</button></span></div>`}).join('')||'Empty'; document.getElementById('total').textContent=gh(total)}
+async function checkout(){let customer={name:document.getElementById('cName').value,email:document.getElementById('cEmail').value,phone:document.getElementById('cPhone').value,address:document.getElementById('cAddr').value}; if(!customer.name||!customer.email||!customer.phone||!customer.address) return alert('Please fill all fields'); if(!cart.length) return alert('Cart empty'); document.getElementById('msg').textContent='Connecting to Paystack...'; try{let r=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customer,items:cart})}); let d=await r.json(); if(!r.ok) throw new Error(d.error); location.href=d.authorization_url}catch(e){document.getElementById('msg').textContent=e.message}}
+load();
+</script>
+</body></html>
