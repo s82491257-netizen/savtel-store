@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payment Confirmation | Savage's Pre Order</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:Arial,sans-serif;background:#f3f6fb;margin:0;padding:25px;color:#142033}
+main{max-width:500px;margin:70px auto;background:white;padding:30px;border-radius:15px;text-align:center;box-shadow:0 5px 25px #0001}
+h1{color:#1769ff}
+button{background:#1769ff;color:white;border:0;border-radius:8px;padding:14px 22px;font-weight:bold;margin-top:15px}
+</style>
+</head>
+<body>
+<main>
+<h1 id="heading">Checking your payment...</h1>
+<p id="result">Please wait while we confirm your Paystack transaction.</p>
+<button onclick="location.href='/'">Return to Store</button>
+</main>
+<script>
+const SUPABASE_URL="https://sbzdfqfxmvlfbkulltxs.supabase.co";
+const SUPABASE_ANON_KEY="PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+async function verifyPayment(){
+  const heading=document.getElementById("heading");
+  const result=document.getElementById("result");
+  const params=new URLSearchParams(location.search);
+  const reference=params.get("reference")||params.get("trxref");
+
+  if(!reference){
+    heading.textContent="Payment reference missing";
+    result.textContent="Please contact Savage's Pre Order for assistance.";
+    return;
+  }
+
+  try{
+    const {data,error}=await db.auth.getSession();
+    if(error||!data.session){
+      heading.textContent="Please log in again";
+      result.textContent="Your payment reference is "+reference+". Log in to your store account and check your order history.";
+      return;
+    }
+
+    const response=await fetch("/api/payments/verify/"+encodeURIComponent(reference),{
+      headers:{Authorization:"Bearer "+data.session.access_token}
+    });
+    const answer=await response.json();
+
+    if(!response.ok||answer.status!=="success"){
+      throw new Error(answer.error||"Payment has not been confirmed.");
+    }
+
+    heading.textContent="Payment Successful!";
+    result.textContent="Your payment has been verified. Your order is now being processed. Thank you for shopping with Savage's Pre Order!";
+    localStorage.removeItem("savage_cart");
+  }catch(error){
+    heading.textContent="Payment not confirmed yet";
+    result.textContent=error.message+" Please contact us on WhatsApp if you need assistance.";
+  }
+}
+verifyPayment();
+</script>
+</body>
+</html>
