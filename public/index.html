@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Savage's Pre Order — Arm To Serve | Atonsu, Kumasi</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080b12;--card:#111827;--line:#1e293b;--accent:#8ab4ff;--text:#f8fafc;--muted:#94a3b8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:'Space Grotesk',Arial}
+header{position:sticky;top:0;z-index:20;background:rgba(8,11,18,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:14px 5%;display:flex;justify-content:space-between;align-items:center}
+.brand{font-weight:900;letter-spacing:2px;line-height:1}.brand span{display:block;font-size:8px;letter-spacing:3px;color:var(--muted)}
+.nav{display:flex;gap:10px;align-items:center}.btn{background:var(--accent);color:#000;border:0;padding:10px 18px;border-radius:999px;font-weight:800;cursor:pointer}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text);padding:10px 16px;border-radius:999px;cursor:pointer}
+.hero{padding:60px 5% 30px;display:grid;grid-template-columns:1.2fr .8fr;gap:20px}@media(max-width:800px){.hero{grid-template-columns:1fr}h1{font-size:38px!important}}
+h1{font-size:64px;line-height:.9;letter-spacing:-3px;margin:0}.hero h1 span{color:var(--accent)}
+.filters{padding:10px 5%;display:flex;gap:10px;flex-wrap:wrap}.filters button{background:transparent;border:1px solid var(--line);color:var(--text);padding:8px 16px;border-radius:999px;cursor:pointer}.filters button.active{background:var(--text);color:#000}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;padding:20px 5%}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:.2s}.card:hover{transform:translateY(-3px)}
+.card img{width:100%;height:220px;object-fit:cover}.card-body{padding:16px}.card small{color:var(--accent);font-size:10px;letter-spacing:2px;text-transform:uppercase}
+.card h3{margin:8px 0}.card .price-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.wishlist{position:absolute;right:12px;top:12px;background:#00000080;border:0;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer}
+#drawer{position:fixed;right:0;top:0;bottom:0;width:100%;max-width:400px;background:#fff;color:#000;z-index:50;transform:translateX(100%);transition:.3s;overflow:auto}#drawer.open{transform:translateX(0)}
+#drawer header{background:#fff;border-bottom:1px solid #eee}#overlay{position:fixed;inset:0;background:#0008;display:none;z-index:40}#overlay.show{display:block}
+input,select,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;margin:6px 0}
+.badge{background:var(--accent);color:#000;font-size:11px;padding:2px 8px;border-radius:999px}
+footer{border-top:1px solid var(--line);padding:30px 5%;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px}
+</style>
+</head>
+<body>
+<header>
+<div class="brand">SAVAGE'S PRE ORDER<span>ARM TO SERVE • ATONSU, KUMASI • quaicoegershom1@gmail.com</span></div>
+<div class="nav">
+<button class="btn-ghost" onclick="openDrawer('wishlistDrawer')">Wishlist (<span id="wishCount">0</span>)</button>
+<button class="btn" onclick="openDrawer('cartDrawer')">Cart (<span id="cartCount">0</span>)</button>
+<button class="btn-ghost" id="authBtn" onclick="openDrawer('authDrawer')">Login</button>
+</div>
+</header>
+
+<div class="hero">
+<div>
+<p style="color:var(--accent);letter-spacing:3px;font-size:11px">SNEAKERS • TOPS • FURNITURE • WHATSAPP 0257980924</p>
+<h1>YOUR STYLE.<br><span>YOUR MOVE.</span></h1>
+<p style="color:var(--muted);max-width:480px;margin-top:14px">Savage's Pre Order — Professional storefront from Atonsu, Kumasi. Secure Paystack (GHS), customer accounts, wishlist, order history & admin dashboard.</p>
+<div style="margin-top:20px;display:flex;gap:10px"><button class="btn" onclick="document.getElementById('store').scrollIntoView({behavior:'smooth'})">Shop Now</button><a href="https://wa.me/233257980924" class="btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center">Chat WhatsApp</a></div>
+</div>
+<div style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px">
+<h3 style="margin:0">Customer Portal</h3><p style="color:var(--muted);font-size:13px">Register → Login → Cart → Wishlist → Checkout → Order History</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+<div style="background:#0b1220;padding:12px;border-radius:10px">✓ Registration</div>
+<div style="background:#0b1220;padding:12px;border-radius:10px">✓ Shopping Cart</div>
+<div style="background:#0b1220;padding:12px;border-radius:10px">✓ Wishlist</div>
+<div style="background:#0b1220;padding:12px;border-radius:10px">✓ Paystack</div>
+</div>
+<button class="btn-ghost" style="width:100%;margin-top:12px" onclick="openDrawer('authDrawer')">Create Account / Login</button>
+</div>
+</div>
+
+<div class="filters">
+<button class="active" onclick="filterCat('All',this)">All Products</button>
+<button onclick="filterCat('Sneakers',this)">Sneakers</button>
+<button onclick="filterCat('Tops',this)">Tops</button>
+<button onclick="filterCat('Furniture',this)">Furniture</button>
+</div>
+
+<div id="store" class="grid"><p>Loading products from /api/products...</p></div>
+
+<div id="overlay" onclick="closeDrawers()"></div>
+
+<!-- CART DRAWER -->
+<div id="cartDrawer" class="drawer" style="position:fixed;right:0;top:0;bottom:0;width:100%;max-width:420px;background:#fff;color:#000;z-index:60;transform:translateX(100%);transition:.3s;overflow:auto" id="cartDrawer">
+<div style="padding:18px;position:sticky;top:0;background:#fff;display:flex;justify-content:space-between;border-bottom:1px solid #eee"><h3>Your Bag</h3><button onclick="closeDrawers()" style="border:0;background:none;font-size:22px">✕</button></div>
+<div style="padding:18px">
+<div id="cartItems">Empty bag</div>
+<hr><div style="display:flex;justify-content:space-between"><b>Total</b><b id="cartTotal">GH₵0.00</b></div>
+<h4 style="margin-top:20px">Checkout Details</h4>
+<input id="cName" placeholder="Full Name"/>
+<input id="cEmail" type="email" placeholder="Email (Paystack receipt)"/>
+<input id="cPhone" placeholder="Phone 0257980924"/>
+<textarea id="cAddr" placeholder="Delivery Address - Atonsu, Kumasi"></textarea>
+<button class="btn" style="width:100%;margin-top:10px" onclick="checkout()">Pay Securely with Paystack (GHS)</button>
+<p id="checkoutMsg" style="font-size:13px;color:#0a7"></p>
+<div id="orderHistory" style="margin-top:24px"></div>
+</div>
+</div>
+
+<!-- WISHLIST -->
+<div id="wishlistDrawer" style="position:fixed;right:0;top:0;bottom:0;width:100%;max-width:420px;background:#fff;color:#000;z-index:60;transform:translateX(100%);transition:.3s;overflow:auto">
+<div style="padding:18px;display:flex;justify-content:space-between;border-bottom:1px solid #eee"><h3>Wishlist ❤</h3><button onclick="closeDrawers()" style="border:0;background:none;font-size:22px">✕</button></div>
+<div id="wishlistItems" style="padding:18px">No wishlist yet</div>
+</div>
+
+<!-- AUTH -->
+<div id="authDrawer" style="position:fixed;right:0;top:0;bottom:0;width:100%;max-width:420px;background:#fff;color:#000;z-index:60;transform:translateX(100%);transition:.3s;overflow:auto">
+<div style="padding:18px;display:flex;justify-content:space-between;border-bottom:1px solid #eee"><h3>Customer Account</h3><button onclick="closeDrawers()" style="border:0;background:none;font-size:22px">✕</button></div>
+<div style="padding:18px">
+<p style="color:#666;font-size:13px">For now accounts are saved on this phone. Later we connect Supabase savages-pre-order for real login.</p>
+<input id="regName" placeholder="Full Name"/>
+<input id="regEmail" placeholder="Email quaicoegershom1@gmail.com"/>
+<input id="regPass" type="password" placeholder="Password"/>
+<button class="btn" style="width:100%" onclick="register()">Create Account</button>
+<hr style="margin:18px 0">
+<input id="logEmail" placeholder="Login Email"/>
+<input id="logPass" type="password" placeholder="Password"/>
+<button class="btn-ghost" style="width:100%" onclick="login()">Login</button>
+<p id="authMsg" style="font-size:13px"></p>
+<div id="accountInfo" style="margin-top:16px;background:#f8fafc;padding:12px;border-radius:10px"></div>
+<a href="#admin" onclick="closeDrawers();document.getElementById('adminSection').scrollIntoView()" style="display:block;margin-top:20px;color:#000">→ Go to Admin Dashboard</a>
+</div>
+</div>
+
+<footer>
+<div><b>Savage's Pre Order</b><br>Arm To Serve • Atonsu, Kumasi<br>quaicoegershom1@gmail.com • 0257980924</div>
+<div>Categories: Sneakers, Tops, Furniture<br>Paystack GHS • Delivery across Kumasi<br><span id="adminSection">Admin: Use ADMIN_PASSWORD in Render → /api/admin/orders</span></div>
+</footer>
+
+<script>
+let products=[], cart=JSON.parse(localStorage.getItem('sav_cart')||'[]'), wishlist=JSON.parse(localStorage.getItem('sav_wish')||'[]'), currentCat='All', user=JSON.parse(localStorage.getItem('sav_user')||'null');
+const fmt=n=>'GH₵'+Number(n).toFixed(2);
+
+function openDrawer(id){closeDrawers();document.getElementById(id).style.transform='translateX(0)';document.getElementById('overlay').classList.add('show')}
+function closeDrawers(){document.querySelectorAll('[id$="Drawer"]').forEach(d=>d.style.transform='translateX(100%)');document.getElementById('overlay').classList.remove('show')}
+function save(){localStorage.setItem('sav_cart',JSON.stringify(cart));localStorage.setItem('sav_wish',JSON.stringify(wishlist));updateCounts()}
+
+async function loadProducts(){
+ try{
+  const r=await fetch('/api/products'); products=await r.json();
+  render();
+ }catch(e){document.getElementById('store').innerHTML='<p style="color:#f55">Failed to load products. Check Render /api/products is LIVE. '+e.message+'</p>'}
+}
+function filterCat(cat,btn){currentCat=cat;document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render()}
+function render(){
+ let list=currentCat==='All'?products:products.filter(p=>p.category===currentCat);
+ document.getElementById('store').innerHTML=list.map(p=>`
+ <div class="card" style="position:relative">
+  <button class="wishlist" onclick="toggleWish('${p.id}')">${wishlist.find(w=>w.id==p.id)?'♥':'♡'}</button>
+  <img src="${p.image||'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600'}" onerror="this.src='https://via.placeholder.com/400'">
+  <div class="card-body">
+   <small>${p.category}</small>
+   <h3>${p.name}</h3>
+   <p style="color:var(--muted);font-size:13px">${p.description||''}</p>
+   <div class="price-row"><b>${fmt(p.price)}</b><span style="color:var(--muted);font-size:12px">Stock ${p.stock||20}</span></div>
+   <button onclick="addToCart('${p.id}')">Add to Bag</button>
+  </div>
+ </div>`).join('')||'<p>No products in this category</p>';
+}
+function addToCart(id){let p=products.find(x=>x.id==id);let f=cart.find(x=>x.id==id);if(f)f.qty++;else cart.push({id:p.id,name:p.name,price:p.price,qty:1,image:p.image});save();renderCart();openDrawer('cartDrawer')}
+function renderCart(){
+ document.getElementById('cartCount').textContent=cart.reduce((a,b)=>a+b.qty,0);
+ let total=0; document.getElementById('cartItems').innerHTML=cart.map(c=>{total+=c.price*c.qty;return `<div style="display:flex;gap:10px;margin:10px 0"><img src="${c.image}" style="width:50px;height:50px;object-fit:cover;border-radius:8px"><div style="flex:1"><b>${c.name}</b><br><small>${fmt(c.price)} x ${c.qty}</small></div><div><b>${fmt(c.price*c.qty)}</b><br><button onclick="cart=cart.filter(x=>x.id!='${c.id}');save();renderCart()" style="color:red;border:0;background:none">Remove</button></div></div>`}).join('')||'Empty bag';
+ document.getElementById('cartTotal').textContent=fmt(total);
+ let orders=JSON.parse(localStorage.getItem('sav_orders')||'[]'); document.getElementById('orderHistory').innerHTML=orders.length?'<h4>Order History</h4>'+orders.map(o=>`<div style="border:1px solid #eee;padding:8px;border-radius:8px;margin:6px 0"><small>${new Date(o.date).toLocaleString()}</small><br><b>${o.id}</b> - ${fmt(o.total)} - <span style="color:green">${o.status}</span></div>`).join(''):'';
+}
+function toggleWish(id){let p=products.find(x=>x.id==id);let f=wishlist.find(x=>x.id==id);if(f)wishlist=wishlist.filter(x=>x.id!=id);else wishlist.push(p);save();render();renderWishlist()}
+function renderWishlist(){document.getElementById('wishCount').textContent=wishlist.length;document.getElementById('wishlistItems').innerHTML=wishlist.map(w=>`<div style="display:flex;gap:10px;margin:10px 0"><img src="${w.image}" style="width:60px;height:60px;object-fit:cover;border-radius:8px"><div><b>${w.name}</b><br>${fmt(w.price)}<br><button onclick="addToCart('${w.id}')" style="margin-top:4px">Add to Cart</button> <button onclick="toggleWish('${w.id}')" style="color:red;background:none;border:0">Remove</button></div></div>`).join('')||'No wishlist yet'}
+function register(){let name=document.getElementById('regName').value,email=document.getElementById('regEmail').value,pass=document.getElementById('regPass').value;if(!name||!email||!pass)return alert('Fill all');let users=JSON.parse(localStorage.getItem('sav_users')||'[]');if(users.find(u=>u.email==email))return alert('Email exists');users.push({name,email,pass});localStorage.setItem('sav_users',JSON.stringify(users));localStorage.setItem('sav_user',JSON.stringify({name,email}));user={name,email};document.getElementById('authMsg').textContent='Account created! Logged in.';updateAuth()}
+function login(){let email=document.getElementById('logEmail').value,pass=document.getElementById('logPass').value;let users=JSON.parse(localStorage.getItem('sav_users')||'[]');let u=users.find(x=>x.email==email&&x.pass==pass);if(!u)return alert('Invalid login');localStorage.setItem('sav_user',JSON.stringify({name:u.name,email:u.email}));user={name:u.name,email:u.email};document.getElementById('authMsg').textContent='Logged in!';updateAuth()}
+function updateAuth(){user=JSON.parse(localStorage.getItem('sav_user')||'null');if(user){document.getElementById('authBtn').textContent=user.name.split(' ')[0];document.getElementById('accountInfo').innerHTML=`<b>Welcome, ${user.name}</b><br>${user.email}<br><br><button onclick="localStorage.removeItem('sav_user');location.reload()" style="border:0;background:#000;color:#fff;padding:8px 12px;border-radius:8px">Logout</button><hr><small>Order history is saved on this device. Connect Supabase savages-pre-order later for cloud orders.</small>`}else{document.getElementById('accountInfo').innerHTML='Not logged in'}renderCart();renderWishlist()}
+async function checkout(){
+ let c={name:document.getElementById('cName').value||user?.name||'',email:document.getElementById('cEmail').value||user?.email||'',phone:document.getElementById('cPhone').value,address:document.getElementById('cAddr').value};
+ if(!c.name||!c.email||!c.phone||!c.address)return alert('Fill checkout details');if(!cart.length)return alert('Cart empty');
+ document.getElementById('checkoutMsg').textContent='Connecting Paystack...';
+ try{
+  const r=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customer:c,items:cart,user_id:user?.email||null})});
+  const d=await r.json();if(!r.ok)throw new Error(d.error||'Checkout failed');
+  let orders=JSON.parse(localStorage.getItem('sav_orders')||'[]');orders.unshift({id:'SAV-'+Date.now(),total:cart.reduce((a,b)=>a+b.price*b.qty,0),status:'pending',date:new Date().toISOString()});localStorage.setItem('sav_orders',JSON.stringify(orders));
+  cart=[];save();renderCart();
+  location.href=d.authorization_url;
+ }catch(e){document.getElementById('checkoutMsg').textContent='Error: '+e.message}
+}
+updateAuth();loadProducts();renderCart();renderWishlist();
+if(location.search.includes('payment=success')){document.getElementById('checkoutMsg').textContent='Payment success! Order will be updated.';openDrawer('cartDrawer')}
+</script>
+</body>
+</html>
